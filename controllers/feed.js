@@ -3,7 +3,6 @@ const { validationResult } = require('express-validator');
 const fs = require('fs');
 const path = require('path');
 
-const io = require('../socket');
 const Post = require('../models/post');
 const User = require('../models/user');
 
@@ -113,7 +112,6 @@ exports.updatePost = async (req, res, next) => {
   post.content = content;
 
   await post.save();
-  io.getIO().emit('posts', { action: 'update', post });
   res.status(200).json({ message: 'Post Updated!', post });
 };
 
@@ -138,7 +136,6 @@ exports.deletePost = async (req, res, next) => {
   const user = await User.findById(req.userId);
   user.posts.pull(postId);
   await user.save();
-  io.getIO().emit('posts', { action: 'delete', post: postId });
   res.status(200).json({ message: 'Post removed!' });
 };
 
